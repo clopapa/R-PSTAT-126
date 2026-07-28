@@ -1,0 +1,207 @@
+---
+title: "Homework Assignment 1"
+author: "Chloe Lo Papa"
+date: "`r format(Sys.Date(), '%B %d, %Y')`"
+format: 
+ pdf:
+    code-fold: true
+    code-line-numbers: true
+    code-copy: true
+    code-tools: true
+    self-contained: true
+    toc: false
+    toc-location: left
+    number-sections: true
+    geometry: margin=0.7in 
+---
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(message =  FALSE)
+knitr::opts_chunk$set(warning =  FALSE)
+knitr::opts_chunk$set(error =  TRUE)
+knitr::opts_chunk$set(echo = TRUE)
+bfcolor <- function(x, color) {
+  if (knitr::is_latex_output()) {
+    sprintf("\\textcolor{%s}{\\textbf{%s}}", color, x)
+  } else if (knitr::is_html_output()) {
+    sprintf("<span style='color: %s;'><b>%s</b></span>", color, x)
+  } else x
+}
+```
+
+
+# Question 1
+When asked to state the simple linear regression model, a student wrote it as follows:
+Do you agree? Explain.
+
+This is incorrect because the expectation of Yi would not include the error term. For the simple model we do not include the expectation this function above is actually called the regression function line. Rather, the correct simple linear regression model is (\(Yi\)) =B0 + B1Xi + ei for i = 1, ..., n 
+
+# Question 2
+Consider the simple linear regression model
+\(Yi\) = B0 + BXi + ei
+(a) (3 pt) Assume that X = 0 is within the scope of the model. What is the implication for the
+regression function if B0 = 0? How would the regression function plot on a graph?
+
+If X = 0 and B0 = 0 then the response, y must also be zero meaning we get a straight line that passes through the origin. Therefore the mean response for y in this case is zero when X = 0.
+
+(b) (4 pt) Under the assumption of B0 = 0, derive the least squares estimate of B1?
+
+
+![Handwritten Solutions for Q2 Part B](Hw1Prob2.pdf)
+
+(c) (3 pt) How do you fit such a model using the lm function?
+model <- lm(y ~ 0 + x, data = mydata)
+The lm function finds B1 so that the distance between the actual data is minimized by the line as much as possible. The model gives us the equation for the line Y = 0 + BXi with R not estimateing B0 because it is set at 0
+
+# Question 3
+Consider the simple linear regression model
+Yi = B0 + BXi + ei
+(a) (3 pt) What is the implication for the regression function if B1 = 0? How would the regression function plot on a graph?
+
+This makes X have no influence on Y. X and Y are uncorrelated. The graph will cross the y axis at point B0 and have a zero slope.
+
+(b) (4 pt) Under the assumption of B1 = 0, derive the least squares estimate of B0?
+
+k![Handwritten Solutions for Q3 Part B](Hw1Prob3.pdf)
+
+(c) (3 pt) How do you fit such a model using the lm function?
+
+I would fit the model y by giving it the slope of 1. 
+model_intonly <- lm(y ~ 1, data = mydata)
+
+
+# Question 4
+(3 pt) The summation of residual equals zero for the simple linear model. Does that imply the summation of random errors in the model equals zero? Does the expectation of the summation of random errors equal zero? Comment.
+
+The summation of residual equalling zero does not imply the sum of the random erros in the model is zero. 
+Sum of Residuals = 0 is neccessary
+Because the errors are independent rv's their sum is most likely not zero still. Even though the expectation is 0 because as n approaches infinity they go to zero. The Gauss markov assumption gives us this. 
+
+# Question 5
+(15 pt) Consider the simple linear regression model
+Yi = B0 + B1Xi + ei
+Show that minimizing the sum of squared residuals lead to the following least squares coefficient estimates:
+Show that B0 has minimum variance among all unbiased
+linear estimators.
+
+![Handwritten Solutions for Q5](Hw1Prob5.pdf)
+
+# Question 6
+GPA. The director of admissions of a small college selected 120 students at random from the new freshman class in a study to determine whether a student’s grade point average (GPA) at the end of the freshman year can be predicted from the ACT test score. All data are available in the
+
+(a) (3 pt) In this problem, what is the predictor variable, and what is the response variable?
+
+Predictor: Students ACT Score
+Response: Freshman students GPA
+
+(b) (3 pt) Construct a scatter plot of the predictor and response variables. Comment on your impression of the relationship.
+
+```{r}
+library(tidyverse)
+gpa <- read.table("GPA.txt", header = TRUE)
+plot(gpa$ACT, gpa$GPA, 
+  xlab = "ACT Score", ylab = "Freshman GPA", 
+  main = "GPA vs ACT Score Scatter Plot")
+```
+
+The scatter plot reveals a weak but positive linear trend. The plot still looks pretty random to me. There does not seem to be a strong coorrelation between higher ACT score and gpa, only a slight one
+
+(c) (3 pt) Fit a simple linear regression model using lm function and report the estimated regression function.
+
+```{r}
+library(tidyverse)
+model <- lm(GPA ~ ACT, data = gpa)
+summary(model)
+```
+
+GPA = 2.11405 + 0.03883(ACT)
+The relationship is statistically significant because the p value is less than 0.05. The ACT score is a weak predictor of freshman year GPA and there is a correlation between the two yet it is relitively small. 
+
+(d) (3 pt) Add the fitted line to the scatter plot in (b). Does the estimated regression function appear to fit the data well?
+
+```{r}
+library(tidyverse)
+gpa <- read.table("GPA.txt", header = TRUE)
+plot(gpa$ACT, gpa$GPA, 
+  xlab = "ACT Score", ylab = "Freshman GPA", 
+  main = "GPA vs ACT Score Scatter Plot")
+abline(model, col = "blue", lwd = 2)
+summary(model)
+```
+I mean it doesnt really fit the line that well just because the data points are pretty spread out. I would say the line is mediocure at representing the data. The residuals seem like they are fairly large from the line. it captures the general upward trend yet the data points are very dispersed around the line
+
+(e) (3 pt) Obtain a point estimate of the mean freshman GPA for students with ACT test score equals 30.
+
+```{r}
+library(tidyverse)
+predict(model, newdata = data.frame(ACT = 30))
+```
+
+(f) (3 pt) What is the point estimate of the change in the mean response when the entrance test score increases by one point?
+
+The point estimate of the change in mean response when the entrance test score increases by one point is 0.0388 points, the slope of the line.
+
+(g) (3 pt) Obtain the residuals and check whether they sum to zero.
+
+```{r}
+library(tidyverse)
+resids <- resid(model)
+sum(resids)
+```
+
+This value is basically zero
+
+(h) (3 pt) Estimate sd2 and sd. What are the units of them?
+
+sd2 = 0.3883
+sd = Residual standard error: 0.6231
+
+# Question 7
+Airfreight breakage. A substance used in biological and medical research is shipped by airfreight to users in cartons of 1,000 ampules. Data were collected on the number of times the carton was transferred from one aircraft to another over the shipment route and the number of ampules found to be broken upon arrival.
+
+(a) (6 pt) Obtain the estimated regression function. Plot the estimated regression function and the data. Does a linear regression function appear to give a good fit here?
+
+```{r}
+library(tidyverse)
+air_data <- read.table("airfreight_breakage.txt", header = TRUE)
+colnames(air_data) <- c("broken", "transfers")
+
+fit <- lm(broken ~ transfers, data = air_data)
+
+ggplot(air_data, aes(x = transfers, y = broken)) +
+  geom_point(size = 3, color = "black") + # Your data points
+  geom_smooth(method = "lm", color = "red", fill = "pink", se = TRUE) + # The line + 95% CI
+  labs(title = "Airfreight Breakage vs. Transfers",
+       x = "Number of Transfers",
+       y = "Broken Ampules") +
+  theme_minimal()
+
+summary(fit)
+```
+
+broken = 10.0 + 4.0(transfers)
+The linear regression function proveides a good fit because the R^2 value is .9195 (very good) and the p value is smaller than 0.05 meaning there is a linear relationship. The residuals also have a small range, and there is small residual standard error.
+
+(b) (3 pt) Obtain a point estimate of the expected number of broken ampules when 1 transfer is made.
+
+For each transfer, we estimate 4 additional broken amplues. We start at 10 broken so after 1 transfer there is 14 total broken amplues.
+
+
+(c) (3 pt) Estimate the increase in the expected number of ampules broken when there are 2 transfers as compared to 1 transfer.
+
+The estimate increase is ampules broken from 2 transfers from 1 transfer is 4 ( the slope).
+
+(d) (3 pt) Verify that your fitted regression line goes through the point ( ¯X, ¯Y ).
+
+The mean of X = 1.0
+The mean of Y = 14
+
+Given that broken = 10.0 + 4.0(transfers)
+
+broken = 10.0 + 4.0(1.0)
+broken = 14
+result of 14.0 is  equal to the mean of 14
+the regression passes through the center of the data 
+
